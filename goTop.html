@@ -1,0 +1,53 @@
+<style>
+#goTop{
+-moz-user-select:none;
+-khtml-user-select:none;
+-webkit-user-select:none;
+filter:alpha(opacity=50);opacity:0.5; bottom:10px; right:10px;
+width:40px; height:40px;
+cursor: pointer;
+background-color: #333;
+border-radius: 6px;
+position:fixed; display:none; z-index:99999;
+_position:absolute;
+_top:expression(eval(document.compatMode && document.compatMode == 'CSS1Compat') ? documentElement.scrollTop + (documentElement.clientHeight - this.clientHeight) - 10 : document.body.scrollTop + (document.body.clientHeight - this.clientHeight) - 10);
+}
+#goTop .a,#goTop .b,#goTop .c{position:absolute; color:#fff; font-family:Simsun, sans-serif;font-size:40px;line-height: 1em;}
+#goTop .a{left: 10px;top: -12px;font-size: 42px;}
+#goTop .b{left: 10px;top: 11px;font-size: 21px;}
+#goTop .c{left: 15px;top: 23px;font-size: 12px;}
+#goTop:hover{filter:alpha(opacity=80);opacity:0.8;}
+</style>
+<script>
+$(function(){
+ $('<div id="goTop"><span class="a">-</span><span class="b">▲</span><span class="c">■</span></div>').appendTo(document.body);
+ //回到顶部代码
+ var _btn=document.getElementById("goTop");
+ var timer;
+ var _con;
+ function goTop(){
+  var _btn = document.getElementById("goTop");
+  if (document.documentElement && document.documentElement.scrollTop) {
+   _con = document.documentElement;
+  } else if (document.body) {
+   _con = document.body;
+  }
+  set();
+ };
+ function set() {
+  _btn.style.display = _con.scrollTop>100 ? 'block': "none";
+ }
+ $(window).on('scroll.toTop resize',goTop)
+ $(_btn).on('click', function (){
+  this.style.display = "none";
+  $(window).off('scroll.goTop')
+  timer = setInterval(function() {
+   _con.scrollTop -= Math.ceil(_con.scrollTop * 0.5); //数值越大速度越快
+   if (_con.scrollTop == 0){
+    clearInterval(timer)
+    $(window).on('scroll.goTop',goTop)
+   };
+  },10);
+ })
+})
+</script>
