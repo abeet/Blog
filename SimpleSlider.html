@@ -1,0 +1,132 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<metahttp-equiv="Content-Type"content="text/html; charset=utf-8">
+<title></title>
+<style>
+*{margin:0;padding:0;}
+.ss-ct{ width: 650px; height: 250px; margin: 0 auto; overflow: hidden; position: relative;}
+.ss-images{ position: absolute; width: 100%; height: 100%; list-style: none;}
+.ss-images li{ float: left;}
+.ss-bullets{position: absolute; text-align: center; bottom: 0; width:100%; font-size: 0;}
+.ss-bullets li{ display: inline-block; width:6px; height:6px; padding: 6px; cursor: pointer; text-align: center;}
+.ss-bullets li a{ display: inline-block; border-radius: 6px; width: 6px; height: 6px; background: #eee; text-indent: -9em; overflow: hidden; cursor: pointer; opacity: 0.5;}
+.ss-bullets.ss-active-bullet a{ background: #fff; opacity: 1;}
+.ss-next,.ss-prev{ position:absolute; display:block; width:20px; height:30px; top:45%;opacity: 0.5;}
+.ss-next:hover,.ss-prev:hover{opacity: 1;}
+.ss-next{background:url(images/bot2.gif) no-repeat -25px center; right:10px;}
+.ss-prev{background:url(images/bot2.gif) no-repeat left center; left:10px;}
+</style>
+</head>
+<body>
+<divid="slider"class="ss-ct">
+    <ulclass="ss-images">
+        <li><ahref="#1"><imgsrc="images/1.jpg"width="650"height="250"/></a></li>
+        <li><ahref="#2"><imgsrc="images/2.jpg"width="650"height="250"/></a></li>
+        <li><ahref="#3"><imgsrc="images/3.jpg"width="650"height="250"/></a></li>
+        <li><ahref="#4"><imgsrc="images/4.jpg"width="650"height="250"/></a></li>
+        <li><ahref="#5"><imgsrc="images/5.jpg"width="650"height="250"/></a></li>
+        <li><ahref="#6"><imgsrc="images/6.jpg"width="650"height="250"/></a></li>
+    </ul>
+    <ulclass="ss-bullets">
+        <li><ahref="#;">1</a></li>
+        <li><ahref="#;">2</a></li>
+        <li><ahref="#;">3</a></li>
+        <li><ahref="#;">4</a></li>
+        <li><ahref="#;">5</a></li>
+        <li><ahref="#;">6</a></li>
+    </ul>
+    <ahref="#;"class="ss-next"></a>
+    <ahref="#;"class="ss-prev"></a>
+</div>
+<scriptsrc="js/jquery1.83.min.js"></script>
+<script>
+$(function(){
+    var SimpleSlider =function(ct, opts){
+        var me =this;
+        var defaults ={
+            animdelay:3000,//默认停留3秒
+            animtype:'slide',//切换类型，暂只实现滚动切换
+            animduration:400,//切换时间400毫秒
+        };
+        var settings = $.extend({}, defaults, opts);
+        var $ct = $(ct);
+        var slidewidth = $ct.width();
+        var $slider = $ct.find('.ss-images');
+        var $slides = $slider.find('>li');
+        var slidecount = $slides.length;
+        $slider.css('width', slidecount +'00%');
+        var animating =false;
+        var paused =false;
+        var currentindex =0;// 当前可见页索引 (索引从0开始)
+        var nextindex =1;//下一页索引 (索引从0开始)
+        var timer = null;//计时器
+        var $bullets = $ct.find('.ss-bullets>li');
+        $bullets.on('click',function(e){
+            var gotoindex = $bullets.index(this);
+            if(!animating && currentindex !== gotoindex){
+                go(false, gotoindex);
+            }
+        })
+        $bullets.eq(currentindex).addClass('ss-active-bullet');
+        var $prev = $ct.find('a.ss-prev');
+        var $next = $ct.find('a.ss-next');
+        $prev.on('click',function(e){
+            e.preventDefault();
+            go('prev',false);
+        });
+        $next.on('click',function(e){
+            e.preventDefault();
+            go('next',false);
+        });
+        var set_next =function(direction){
+            if(direction ==='next'){
+                if(currentindex == slidecount -1){
+                    nextindex =0;
+                }else{
+                    nextindex = currentindex +1;
+                }
+            }else{
+                if(currentindex ==0){
+                    nextindex = slidecount -1;
+                }else{
+                    nextindex = currentindex -1;
+                }
+            }
+        };
+        var go =function(direction, position){
+            if(!animating){
+                animating =true;
+                if(typeof position =='number'){
+                    nextindex = position;
+                }else{
+                    set_next(direction);
+                }
+                $bullets.removeClass('ss-active-bullet');
+                $bullets.eq(nextindex).addClass('ss-active-bullet');
+                $slider.animate({
+                    'left':-nextindex * slidewidth
+                }, settings.animduration,function(){
+                    currentindex = nextindex;
+                    animating =false;
+                    if(timer){
+                        clearTimeout(timer);
+                    }
+                    timer = setTimeout(function(){
+                        go('next',false);
+                    }, settings.animdelay);
+                });
+            }
+        };
+        timer = setTimeout(function(){
+            go('next',false);
+        }, settings.animdelay);
+        this.go = go;
+    }
+    ss =new SimpleSlider('#slider');
+});
+</script>
+</body>
+</html>
+ 
