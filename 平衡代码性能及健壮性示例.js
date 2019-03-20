@@ -21,6 +21,7 @@ var loader = function (source) {
   return source.replace(/<template>\s+<div/m, '<template>\n<div'+sourcePath)
 }
 alert(['处理前代码:', source, '\n处理后代码:', loader(source)].join('\n'))
+
 /** 
 2：考虑性能，并考虑非div标签
 **/
@@ -45,6 +46,7 @@ var loader = function (source) {
     return source
   }
 }
+alert(['处理前代码:', source, '\n处理后代码:', loader(source)].join('\n'))
 
 /** 
 3：考虑性能，考虑有注释干扰的情况，考虑标签属性中有尖括号的情况
@@ -62,7 +64,7 @@ asdf
 export default {
 }
 </` + `script>`
-function loader(source) {
+var loader = function (source) {
   let pos
   let templateStartIndex = source.indexOf('<template>');
   let templateEndIndex = source.indexOf('</template>');
