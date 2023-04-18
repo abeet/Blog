@@ -64,6 +64,35 @@ asdf
 export default {
 }
 </` + `script>`
+var sourcePath = ` data-source="src\\views\\app.vue"`
+var loader = function (source) {
+  const match = source.match(/(<template[^>]*>)\s*(\s*<!--[\s\S]*-->\s*)*<([\w-]+)(\s|>)/)
+  if (match?.[3]) {
+    const start = source.slice(0, source.indexOf(match[0]) + match[0].length - 1)
+    const end = source.slice(source.indexOf(match[0]) + match[0].length - 1)
+    return = `${start}${sourcePath}${end}`
+  } else {
+    return source
+  }
+}
+alert(['处理前代码:', source, '\n处理后代码:', loader(source)].join('\n'))
+
+/** 
+4：考虑性能，考虑有注释干扰的情况，考虑标签属性中有尖括号的情况
+**/
+var source = `<style>
+</style>
+<template>
+<!-- -->
+<!--<div></div>-->
+<span v-show="index > 0">
+asdf
+</span>
+</template>
+<script>
+export default {
+}
+</` + `script>`
 var loader = function (source) {
   let pos
   let templateStartIndex = source.indexOf('<template>');
@@ -108,5 +137,3 @@ var loader = function (source) {
   }
 }
 alert(['处理前代码:', source, '\n处理后代码:', loader(source)].join('\n'))
-
-
